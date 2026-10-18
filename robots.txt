@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://swin3t33th.github.io/ICL/sitemap.xml
