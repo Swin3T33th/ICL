@@ -121,7 +121,7 @@ li a.it:hover{border-color:var(--acc)}.rk{min-width:48px;text-align:center;font-
 .tg{display:inline-block;margin-left:6px;border:1px solid var(--acc);color:var(--acc);border-radius:99px;padding:0 8px;font-size:.75rem}
 dl{display:grid;grid-template-columns:auto 1fr;gap:8px 20px;background:var(--s);border:1px solid var(--line);border-radius:12px;padding:16px}
 dt{color:var(--mute)}dd{margin:0;font-weight:600;overflow-wrap:anywhere}.nav{display:flex;justify-content:space-between;gap:10px;margin-top:24px}
-footer{margin-top:36px;color:var(--mute);font-size:.9rem}:focus-visible{outline:3px solid var(--acc);outline-offset:2px}"""
+.vid{position:relative;margin:16px 0 6px;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#000}.vid iframe,.vid button{position:absolute;inset:0;width:100%;height:100%;border:0}.vid button{padding:0;cursor:pointer;background:center/cover no-repeat}.vid button::after{content:"▶";position:absolute;inset:0;margin:auto;width:68px;height:68px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:28px;display:grid;place-items:center;padding-left:4px}.btns{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.btn{font:inherit;color:var(--ink);background:var(--s);border:1px solid var(--line);border-radius:10px;padding:8px 14px;cursor:pointer}.btn:hover{border-color:var(--acc)}.tg.t-2p{border-color:#6c8cff;color:#8fa6ff}.tg.t-unnerfed{border-color:#e0b04a;color:#e0b04a}.tg.t-fixed{border-color:#e07a7a;color:#e07a7a}li.th a.it{background:linear-gradient(90deg,rgba(29,23,40,.97) 30%,rgba(29,23,40,.55)),var(--img) center/cover}footer{margin-top:36px;color:var(--mute);font-size:.9rem}:focus-visible{outline:3px solid var(--acc);outline-offset:2px}"""
 FOOT = '<footer>Sitio no oficial. La lista original es de KaiGuy y está moderada por Akhanas. <a href="https://discord.gg/u2D73R7" rel="noopener">Discord de la ICL</a>.</footer>'
 def page(title, desc, canon, body, extra=""):
     return f'''<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -129,22 +129,23 @@ def page(title, desc, canon, body, extra=""):
 <meta property="og:title" content="{E(title)}"><meta property="og:description" content="{E(desc)}"><meta property="og:type" content="website"><meta property="og:url" content="{SITE}/{canon}">
 <link rel="stylesheet" href="style.css">{extra}</head><body><main>{body}{FOOT}</main></body></html>'''
 def tags(x):
-    return "".join(f'<span class="tg">{FL[t]}</span>' for t in x["f"].split(",") if t)
+    return "".join(f'<span class="tg t-{t}">{FL[t]}</span>' for t in x["f"].split(",") if t)
 open("style.css", "w").write(CSS)
-items = "".join(f'<li data-s="{E((x["n"]+" "+x["c"]).lower())}" data-2p="{int("2p" in x["f"])}"><a class="it" href="nivel-{x["r"]}.html"><span class="rk">#{x["r"]}</span><span><span class="nm">{E(x["n"])}{tags(x)}</span><span class="by">{"de "+E(x["c"]) if x["c"] else "creador sin indicar"}</span></span></a></li>' for x in L)
+items = "".join(f'<li data-r="{x["r"]}" data-s="{E((x["n"]+" "+x["c"]).lower())}" data-2p="{int("2p" in x["f"])}"><a class="it" href="nivel-{x["r"]}.html"><span class="rk">#{x["r"]}</span><span><span class="nm">{E(x["n"])}{tags(x)}</span><span class="by">{"de "+E(x["c"]) if x["c"] else "creador sin indicar"}</span></span></a></li>' for x in L)
 js = """<script>const q=document.getElementById("q"),p=document.getElementById("p"),li=[...document.querySelectorAll("li")],c=document.getElementById("c");
 function f(){const s=q.value.toLowerCase().trim();let n=0;li.forEach(e=>{const ok=e.dataset.s.includes(s)&&(!p.checked||e.dataset["2p"]==="1");e.hidden=!ok;if(ok)n++});c.textContent=n+" niveles"}
 q.oninput=p.onchange=f;f()</script>"""
-body = f'<h1>Impossible Challenge List</h1><p class="sub">Los 100 niveles más difíciles de Geometry Dash, ordenados del más difícil al más accesible. Toca un nivel para ver su ficha.</p><input id="q" type="search" placeholder="Buscar por nivel o creador" aria-label="Buscar"><label class="ck"><input id="p" type="checkbox"> Solo 2 jugadores</label><p class="count" id="c" aria-live="polite"></p><ol>{items}</ol>{js}'
+body = f'<h1>Impossible Challenge List</h1><p class="sub">Los 100 niveles más difíciles de Geometry Dash, ordenados del más difícil al más accesible. Toca un nivel para ver su ficha.</p><input id="q" type="search" placeholder="Buscar por nivel o creador" aria-label="Buscar"><label class="ck"><input id="p" type="checkbox"> Solo 2 jugadores</label><p class="count" id="c" aria-live="polite"></p><ol>{items}</ol>{js}<script src="list.js"></script>'
 ld = '<script type="application/ld+json">{"@context":"https://schema.org","@type":"ItemList","name":"Impossible Challenge List","itemListElement":[' + ",".join(f'{{"@type":"ListItem","position":{x["r"]},"name":"{x["n"]}","url":"{SITE}/nivel-{x["r"]}.html"}}' for x in L).replace("\\", "") + ']}</script>'
 open("index.html", "w").write(page(TITLE, "Lista completa de los 100 niveles de la Impossible Challenge List de Geometry Dash, con creador e ID, ordenados por dificultad. Busca por nombre o creador.", "", body, ld))
+if not os.path.exists('videos.json'): open('videos.json','w').write('{}')
 urls = [SITE + "/"]
 for i, x in enumerate(L):
     r = x["r"]; pv = L[i-1] if i else None; nx = L[i+1] if i < len(L)-1 else None
     rows = f'<dt>Posición</dt><dd>#{r} de {len(L)}</dd><dt>Creador</dt><dd>{E(x["c"]) or "Sin indicar"}</dd><dt>ID del nivel</dt><dd>{x["id"] or "No disponible"}</dd>'
     if x["f"]: rows += "<dt>Notas</dt><dd>" + ", ".join(FL[t] for t in x["f"].split(",")) + "</dd>"
     nav = f'<div class="nav"><span>{f"<a href=nivel-{pv[chr(114)]}.html>← {pv[chr(114)]}. {E(pv[chr(110)])}</a>" if pv else ""}</span><span>{f"<a href=nivel-{nx[chr(114)]}.html>{nx[chr(114)]}. {E(nx[chr(110)])} →</a>" if nx else ""}</span></div>'
-    b = f'<p><a href="index.html">← Volver a la lista</a></p><h1>#{r} {E(x["n"])}</h1><dl>{rows}</dl>{nav}'
+    b = f'<p><a href="index.html">← Volver a la lista</a></p><h1>#{r} {E(x["n"])}</h1><div id="v"></div><dl>{rows}</dl><div class="btns">' + (f'<button class="btn" data-c="{x["id"]}">Copiar ID</button>' if x["id"] else '') + '<button class="btn" data-c="">Copiar enlace</button></div>' + f'<script src="level.js" data-r="{r}"></script>' + nav
     d = f'{x["n"]}' + (f' de {x["c"]}' if x["c"] else "") + f', puesto #{r} de la Impossible Challenge List de Geometry Dash' + (f'. ID del nivel: {x["id"]}.' if x["id"] else ".")
     open(f"nivel-{r}.html", "w").write(page(f'{x["n"]} (#{r}) | Impossible Challenge List', d, f"nivel-{r}.html", b))
     urls.append(f"{SITE}/nivel-{r}.html")
