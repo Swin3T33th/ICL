@@ -1,4 +1,4 @@
-(()=>{const R=document.currentScript.dataset.r;
+(()=>{const R=document.currentScript.dataset.k;
 const ID=u=>{const m=u&&String(u).match(/(?:youtu\.be\/|[?&]v=|\/shorts\/|\/embed\/)([\w-]{11})|^([\w-]{11})$/);return m&&(m[1]||m[2])};
 fetch("videos.json").then(r=>r.json()).then(j=>{const id=ID(j[R]);if(!id)return;
 const box=document.getElementById("v"),d=document.createElement("div"),b=document.createElement("button");
